@@ -1,5 +1,11 @@
 Hms::Application.routes.draw do
  
+  devise_for :admins
+
+  devise_for :teachers
+
+  devise_for :students
+
 #  get "windowforms/form"
 #
 #   resources :arranges do
