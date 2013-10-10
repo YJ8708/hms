@@ -1,0 +1,2 @@
+module ArrangesHelper
+end

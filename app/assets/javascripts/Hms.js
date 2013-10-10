@@ -1,0 +1,4 @@
+Hms = { 
+  students: {},
+  teachers: {},
+}
