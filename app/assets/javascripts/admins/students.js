@@ -21,7 +21,7 @@ Hms.admins.students = {
             margin: '0 0 0 5',
             store: this.storeClassTree(),
             split: true,
-            //rootVisible: false,
+            rootVisible: false,
             tbar: [{ 
                 text: '新建'
             }]

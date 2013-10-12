@@ -8,17 +8,63 @@
 </head>
 <body>
 
+<div id="topMenu">
+
+    <p class="notice"><%= notice %></p>
+    <p class="alert"><%= alert %></p>
+
+    <% if student_signed_in? %>
+      <div style="float:right">
+        <strong>学生：</strong>
+        <%= link_to current_student.email, "#" %> |
+        <%= link_to "退出", destroy_student_session_path, method: :delete %>
+      </div>
+    <% end %>
+
+    <% if teacher_signed_in? %>
+      <div style="float:right">
+        <strong>老师：</strong>
+        <%= link_to current_teacher.email, "#" %> |
+        <%= link_to "退出", destroy_teacher_session_path, method: :delete %>
+      </div>
+    <% end %>
+
+    <% if admin_signed_in? %>
+      <div style="float:right">
+        <strong>管理员：</strong>
+        <%= link_to current_admin.email, "#" %> |
+        <%= link_to "退出", destroy_admin_session_path, method: :delete %>
+      </div>
+    <% end %>
+    
+    <% unless student_signed_in? | teacher_signed_in? | admin_signed_in? %>
+    <%= link_to "你还没登陆，请登陆", new_student_session_path %>
+    <% end %>
+
+</div>
+
 <%= yield %>
- <script type = "text/javascript">
-        Ext.onReady(function(){
-            if(Hms.ViewPort){
-                Ext.create('Ext.container.Viewport', {
-                    layout: 'border',
-                    autoScroll: true,
-                    items: [Hms.ViewPort]
-                });
-            };
-        });
-    </script>
+
+<script type = "text/javascript">
+  Ext.onReady(function(){
+    if(Hms.ViewPort){
+      Ext.create('Ext.container.Viewport', {
+        layout: 'border',
+        autoScroll: true,
+        items: [
+          // 顶部菜单
+          Ext.create('Ext.Component', { 
+            region: 'north',
+            height: 32,
+            contentEl: 'topMenu'
+        }), 
+          // 主显示
+          Hms.ViewPort
+        ]
+      });
+    };
+  });
+</script>
+
 </body>
 </html>
