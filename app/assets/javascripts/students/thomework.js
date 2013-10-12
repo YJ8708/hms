@@ -55,6 +55,7 @@ Hms.students.thomework = {
         Ext.define('User', {
             extend: 'Ext.data.Model',
             fields: [
+                {name: 'id', type: 'integer'},
                 {name: 'name', type: 'string'},
                 {name: 'description', type: 'string'},
                 {name: 'teacher/name', type: 'string'},
@@ -148,27 +149,49 @@ Hms.students.thomework = {
             style:'margin-top:69px',
             items: [{
                 xtype: 'filefield',
+                id: 'filename',
                 name: 'file',
                 fieldLabel: '文件',
                 labelWidth: 50,
                 msgTarget: 'side',
                 allowBlank: false,
                 anchor: '100%',
-                buttonText: '选择作业'
+                buttonText: '选择作业',
             }],
 
             buttons: [{
                 text: '上传',
                 handler: function() {
+                    var clickid = Ext.getCmp('thomeworkGrid').getSelectionModel().getLastSelected();
+                    var filename = Ext.getCmp('filename').getValue().split('\\')[2];
                     var form = this.up('form').getForm();
                     if(form.isValid()){
-                        form.submit({
-                            url: '/students/post_attachment.json',
-                            waitMsg: '上传中...',
-                            success: function(fp, o) {
-                                Ext.Msg.alert('Success', '你的作业"' + o.result.file + '" 已经上传!');
-                            }
-                        });
+                        if(clickid){
+                            form.submit({
+                                url: '/students/post_attachment.json',
+                                waitMsg: '上传中...',
+                                success: function(){ 
+                                    Ext.Ajax.request({
+                                        url: '/students/create_attachment.json',
+                                        jsonData: {
+                                            id: clickid.data.id, 
+                                            name: filename
+                                        },
+                                        success: function(fp, o) {
+                                            Ext.Msg.alert('Success', '你的作业' + ' 已经上传!');
+                                        },
+                                        failure: function(){ 
+                                            Ext.Msg.alert('Failure', '存入数据库失败！')
+                                        }
+                                    });
+                                },
+                                failure: function(){ 
+                                    Ext.Msg.alert('提示', "上传失败！")
+                                }
+                            });
+                        }else{ 
+                            Ext.Msg.alert('提示', "请选择一条作业！")
+                        }
                     }
                 }
             }]

@@ -34,6 +34,7 @@ Hms::Application.routes.draw do
       get 'get_thomework'
       get 'get_subject'
       post 'post_attachment'
+      post 'create_attachment'
     end
   end
 
