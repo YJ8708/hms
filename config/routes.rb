@@ -19,6 +19,14 @@ Hms::Application.routes.draw do
 #   
 #   end
 # end
+  resources :admins do
+    collection do
+      get 'students'
+      get 'teachers'
+      get 'get_class_tree'
+    end
+  end
+
   resources :students do
     collection do
       get 'index'

@@ -1,4 +1,5 @@
 Hms = { 
   students: {},
   teachers: {},
+  admins: {}
 }
