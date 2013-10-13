@@ -23,7 +23,8 @@ Hms::Application.routes.draw do
     collection do
       get 'students'
       get 'teachers'
-      get 'get_class_tree'
+      get 'get_classes_tree'
+      post 'del_classes_tree'
     end
   end
 

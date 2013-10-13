@@ -4,32 +4,39 @@ Hms.admins.students = {
             region: 'center',
             layout: 'border',
             items: [
-                this.createClassTree(),
+                this.createClassesTree(),
                 this.createStudentGrid(),
                 this.createSubjectGrid()
             ]
         });
     },
 
-    createClassTree: function() { 
+    createClassesTree: function() { 
         return Ext.create('Ext.tree.Panel', {
+            id: 'classesTree',
             region: 'west',
             title: '惠州学院学生',
             useArrows: true,
             width: 240,
             collapsible: true,
             margin: '0 0 0 5',
-            store: this.storeClassTree(),
+            store: this.storeClassesTree(),
             split: true,
             rootVisible: false,
             tbar: [{ 
                 text: '新建'
+            }, { 
+                text: '修改'
+            }, { 
+                text: '删除',
+                handler: this.delClassesTree
             }]
         });
     },
 
     createStudentGrid: function() { 
         return Ext.create('Ext.grid.Panel', {
+            id: 'studentGrid',
             region: 'center',
             title: '学生列表',
             store: this.storeStudentGrid(),
@@ -63,12 +70,12 @@ Hms.admins.students = {
         });
     },
 
-    storeClassTree: function() { 
+    storeClassesTree: function() { 
         return Ext.create('Ext.data.TreeStore', {
             root: { expanded: true },
             proxy: { 
                 type: 'ajax',
-                url: '/admins/get_class_tree.json',
+                url: '/admins/get_classes_tree.json',
                 reader: { 
                     type: 'json'
                 }
@@ -128,5 +135,29 @@ Hms.admins.students = {
                 }
             }
         });
+    },
+    
+    delClassesTree: function() { 
+        var selection = Ext.getCmp('classesTree').getSelectionModel().getSelection()[0];
+        if(!selection || !selection.data.id) { 
+            Ext.Msg.alert('警告', '请选择一个班级');
+        } else { 
+            Ext.Msg.confirm('心碎了', '确定要删除吗？', function(btn) { 
+                if(btn == 'yes') { 
+                    Ext.Ajax.request({ 
+                        url: '/admins/del_classes_tree',
+                        method: 'POST',
+                        jsonData: { id: selection.data.id },
+                        success: function() { 
+                            Ext.getCmp('classesTree').store.load();
+                            Ext.Msg.alert('删除', '删除成功！');
+                        },
+                        failure: function() { 
+                            Ext.Msg.alert('删除', '删除失败！');
+                        }
+                    });
+                }
+            });
+        }
     }
 }

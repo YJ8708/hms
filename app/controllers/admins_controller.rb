@@ -7,20 +7,26 @@ class AdminsController < ApplicationController
   def teachers
   end
 
-  def get_class_tree
-    tree = { children: [
-                    { text: "班级列表", expanded: true, children: [
-                        { text: "12网络工程1班", leaf: true },
-                        { text: "12网络工程2班", leaf: true },
-                        { text: "12软件工程1班", leaf: true },
-                        { text: "12软件工程2班", leaf: true }
-                    ]},
-                    { text: "未分班的", leaf: true }
-                ]
-            }
+  def get_classes_tree
+    tree = {
+      children: [
+        { text: "班级列表", expanded: true, children: get_classes_list},
+        { text: "未分班的", leaf: true }
+      ]
+    }
+    render json: tree
+  end
 
-    respond_to do |format|
-      format.json { render json: tree }
+  def del_classes_tree
+    Classes.find(params[:id]).destroy
+    get_classes_tree
+  end
+
+  def get_classes_list
+    classesList = []
+    Classes.all.each do |c|
+      classesList.push({ text: c.name, id: c.id, leaf: true })
     end
+    return classesList
   end
 end
