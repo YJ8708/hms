@@ -10,8 +10,13 @@ class StudentsController < ApplicationController
     render :json => { :get_thomework => Thomework.all.provide('id', 'name', 'description', 'teacher/name', 'subject/name', 'time_end') }
   end
 
+  def get_homework
+    tabId = params[:id]
+    render :json => { :get_homework => Homework.find_all_by_subject_id(tabId).provide('id', 'thomework/name', 'mark', 'teacher/name', 'attachment/filename', 'created_at', 'thomework/time_end' ) }
+  end
+
   def get_subject
-    render :json => { :get_subject => Subject.all.provide('name')}
+    render :json => { :get_subject => Subject.all.provide('id', 'name')}
   end
 
   def post_attachment
@@ -35,11 +40,8 @@ class StudentsController < ApplicationController
     a = params[:id]
     getname = params[:name]
     Attachment.create!(:filename=> getname )
-    Homework.create!(:thomework_id => a, :attachment_id => Attachment.find_by_filename(getname).id )
+    Homework.create!(:teacher_id => Thomework.find_by_teacher_id(a).id, :subject_id => Thomework.find_by_subject_id(a).id, :thomework_id => a, :attachment_id => Attachment.find_by_filename(getname).id )
     render :json => {}
-  end
-
-  def delete
   end
 
 end

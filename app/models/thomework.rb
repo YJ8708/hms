@@ -4,4 +4,5 @@ class Thomework < ActiveRecord::Base
   belongs_to :subject
   belongs_to :classes
   belongs_to :teacher
+  has_many :homeworks
 end

@@ -8,58 +8,96 @@ Hms.students.homework = {
     },
 
     //表格开始
-    gridStore: function(){ 
-        return Ext.create('Ext.data.Store',{ 
-            fields: ['name', 'mark', 'teacher', 'download', 'create_time', 'time_end'],
-            data: [
-                { name: 'C++', mark: '88', teacher: 'chris', download: '链接', create_time: '2013-09-25', time_end: '2013-10-01'},
-                { name: 'Java', mark: '98', teacher: 'chris', download: '链接', create_time: '2013-09-25', time_end: '2013-10-01'}
+    gridStore: function(tabId){ 
+        Ext.define('User', {
+            extend: 'Ext.data.Model',
+            fields: [
+                {name: 'id', type: 'integer'},
+                {name: 'thomework/name', type: 'string'},
+                {name: 'mark', type: 'integer'},
+                {name: 'teacher/name', type: 'string'},
+                {name: 'attachment/filename', type: 'string'},
+                {name: 'created_at', type: 'datatime'},
+                {name: 'thomework/time_end', type: 'datatime'}
             ]
-        })
+        });
+
+        return Ext.create('Ext.data.Store', {
+            model: 'User',
+            proxy: {
+                type: 'ajax',
+                url: '/students/get_homework.json?id='+tabId,
+                reader: {
+                    type: 'json',
+                    root: 'get_homework',
+                }
+            },
+            autoLoad: true
+        });
+        
     },
 
-    homeworkGrid: function(){ 
+    homeworkGrid: function(tabId){ 
         return Ext.create('Ext.grid.Panel',{ 
             title: '所有已完成作业',
             forceFit: true,
+            frame: true,
             bbar: new Ext.PagingToolbar({ 
-                pageSize: 2,
-                store: this.gridStore(),
+                pageSize: 25,
+                store: this.gridStore(tabId),
                 displayInfo: true,
                 displayMsg: '显示第 {0} 条到 {1} 条记录，一共 {2} 条',
                 emptyMsg: "没有记录"
             }),
             columns: [
                 { xtype: 'rownumberer', width: 20, sortable: false },
-                { text: '作业名称', sortable: true, dataIndex: 'name' },
+                { text: '作业名称', sortable: true, dataIndex: 'thomework/name' },
                 { text: '成绩', sortable: true, dataIndex: 'mark' },
-                { text: '老师', sortable: true, dataIndex: 'teacher' },
-                { text: '下载', dataIndex: 'download' },
-                { text: '提交时间', sortable: true, dataIndex: 'create_time' },
-                { text: '截止时间', sortable: true, dataIndex: 'time_end' }
+                { text: '老师', sortable: true, dataIndex: 'teacher/name' },
+                { text: '下载', dataIndex: 'attachment/filename' },
+                { text: '提交时间', sortable: true, renderer:Ext.util.Format.dateRenderer('Y年m月d日'), dataIndex: 'created_at' },
+                { text: '截止时间', sortable: true, renderer:Ext.util.Format.dateRenderer('Y年m月d日'), dataIndex: 'thomework/time_end' }
             ],
-            store: this.gridStore()
+            store: this.gridStore(tabId)
         })
     },
     //表格结束
 
     //标签开始
     homeworkTabs: function(){ 
-        return Ext.widget('tabpanel',{ 
+        Ext.Ajax.request({ 
+            url: '/students/get_subject.json',
+            scope: this,
+            success: function(response){ 
+           
+                var o = Ext.decode(response.responseText);
+        
+                var s = new Array();
+
+                var u = o.get_subject.length;
+
+                for(var i=0; i<u; i++){
+                    var tabId = o.get_subject[i].id;
+                    s[i] = tabs11.add({
+                        title: o.get_subject[i].name,
+                        id: o.get_subject[i].id,
+                        layout: 'fit',
+                        listeners: { 
+                            tabchange: function(tab, tabpanel){ 
+                                tab.loader.load(tabpanel.id);
+                            }
+                        },
+                        items: [this.homeworkGrid(tabId)]
+                    });
+                    tabs11.setActiveTab(s[i]);
+                };
+            }
+        });
+
+        return tabs11 = Ext.widget('tabpanel',{ 
             region: 'center',
             frame: true,
-            activeTab: 0,
-            items: [{ 
-                title: 'C++',
-                closable: true,
-                layout: 'fit',
-                items: [this.homeworkGrid()]
-            },{ 
-                title: 'Java',
-                closable: true,
-                layout: 'fit',
-                items: [this.homeworkGrid()]
-            }]
+            activeTab: 0
         })
     },
     //标签结束

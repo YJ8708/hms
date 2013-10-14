@@ -9,4 +9,5 @@ class Teacher < ActiveRecord::Base
   attr_accessible :email, :password, :password_confirmation, :remember_me
   attr_accessible :email, :name, :number, :password, :phone
   has_many :thomeworks
+  has_many :homeworks
 end
