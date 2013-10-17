@@ -3,7 +3,7 @@ Hms.students.thomework = {
         Hms.ViewPort = Ext.create('Ext.panel.Panel',{
             region: 'center',
             layout: 'border',
-            items: [this.thomeworkContainer(), this.thomeworkTree()]
+            items: [this.thomeworkContainer(), this.tree()]
         });
     },
 
@@ -40,12 +40,12 @@ Hms.students.thomework = {
                 emptyMsg: "没有记录"
             }),
             columns: [
-                { xtype: 'rownumberer', width: 10, sortable: false },
-                { text: '作业名称', sortable: true, dataIndex: 'name' },
-                { text: '内容', sortable: true, dataIndex: 'description' },
-                { text: '老师', sortable: true, dataIndex: 'teacher/name' },
-                { text: '科目', sortable: true, dataIndex: 'subject/name' },
-                { text: '截止时间', sortable: true, dataIndex: 'time_end' }
+                { xtype: 'rownumberer', width: 20, align: 'center', sortable: false },
+                { text: '作业名称', sortable: true, align: 'center', dataIndex: 'name' },
+                { text: '内容', sortable: true, align: 'center', dataIndex: 'description' },
+                { text: '老师', sortable: true, align: 'center', dataIndex: 'teacher/name' },
+                { text: '科目', sortable: true, align: 'center', dataIndex: 'subject/name' },
+                { text: '截止时间', sortable: true, align: 'center', dataIndex: 'time_end' }
             ],
             store: this.thomeworkStore()
         });
@@ -168,7 +168,7 @@ Hms.students.thomework = {
                     if(form.isValid()){
                         if(clickid){
                             form.submit({
-                                url: '/students/post_attachment.json',
+                                url: '/students/upload_attachment.json',
                                 waitMsg: '上传中...',
                                 success: function(){ 
                                     Ext.Ajax.request({
@@ -200,14 +200,29 @@ Hms.students.thomework = {
     //表单结束
 
     //树开始
-    thomeworkTree: function(){ 
+    treeStore: function(){ 
+        return Ext.create('Ext.data.TreeStore',{ 
+            root: {
+                expanded: true,
+                children: [
+                  { text: "公告", leaf: true, href: '/students/show_notice' },
+                  { text: "查看作业", leaf: true, href: '/students' },
+                  { text: "查看成绩", leaf: true, href: '/students/show' },
+                  { text: "答疑", leaf: true, href: '#' }
+                ]
+            }
+        })
+    },
+
+    tree: function(){ 
         return Ext.create('Ext.tree.Panel',{ 
             title: '功能选择',
             width: 200,
             frame: true,
             region: 'west',
-            collapsible: true
-            //store: this.treeStore()
+            collapsible: true,
+            rootVisible: false,
+            store: this.treeStore()
         })
     }
     //树结束

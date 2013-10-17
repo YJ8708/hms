@@ -3,7 +3,7 @@ Hms.students.homework = {
         Hms.ViewPort = Ext.create('Ext.panel.Panel', { 
             region: 'center',
             layout: 'border',
-            items: [this.homeworkTree(),this.homeworkTabs()]
+            items: [this.tree(),this.homeworkTabs()]
         });
     },
 
@@ -18,7 +18,8 @@ Hms.students.homework = {
                 {name: 'teacher/name', type: 'string'},
                 {name: 'attachment/filename', type: 'string'},
                 {name: 'created_at', type: 'datatime'},
-                {name: 'thomework/time_end', type: 'datatime'}
+                {name: 'thomework/time_end', type: 'datatime'},
+                //{name: 'descn', type: 'pressmebutton'}
             ]
         });
 
@@ -41,7 +42,7 @@ Hms.students.homework = {
         return Ext.create('Ext.grid.Panel',{ 
             title: '所有已完成作业',
             forceFit: true,
-            frame: true,
+            //tbar: [{ xtype: 'button', text: '下载文件', handler: function(){} }],
             bbar: new Ext.PagingToolbar({ 
                 pageSize: 25,
                 store: this.gridStore(tabId),
@@ -50,13 +51,14 @@ Hms.students.homework = {
                 emptyMsg: "没有记录"
             }),
             columns: [
-                { xtype: 'rownumberer', width: 20, sortable: false },
-                { text: '作业名称', sortable: true, dataIndex: 'thomework/name' },
-                { text: '成绩', sortable: true, dataIndex: 'mark' },
-                { text: '老师', sortable: true, dataIndex: 'teacher/name' },
-                { text: '下载', dataIndex: 'attachment/filename' },
-                { text: '提交时间', sortable: true, renderer:Ext.util.Format.dateRenderer('Y年m月d日'), dataIndex: 'created_at' },
-                { text: '截止时间', sortable: true, renderer:Ext.util.Format.dateRenderer('Y年m月d日'), dataIndex: 'thomework/time_end' }
+                { xtype: 'rownumberer', width: 20, align: 'center', sortable: false },
+                { text: '作业名称', sortable: true, align: 'center', dataIndex: 'thomework/name' },
+                { text: '成绩', sortable: true, align: 'center', dataIndex: 'mark' },
+                { text: '老师', sortable: true, align: 'center', dataIndex: 'teacher/name' },
+                { text: '文件名', align: 'center', dataIndex: 'attachment/filename' },
+                { text: '提交时间', sortable: true, align: 'center', renderer:Ext.util.Format.dateRenderer('Y年m月d日'), dataIndex: 'created_at' },
+                { text: '截止时间', sortable: true, align: 'center', renderer:Ext.util.Format.dateRenderer('Y年m月d日'), dataIndex: 'thomework/time_end' },
+                { text: '下载', menuDisabled: true, sortable: false, align: 'center', xtype: 'actioncolumn', icon: '/assets/downloads.png', tooltip: '下载作业', handler: function(record){ Ext.Ajax.request({ url:'/students/download_attachment', params:{ id: '123.jpg' } })} }
             ],
             store: this.gridStore(tabId)
         })
@@ -103,13 +105,29 @@ Hms.students.homework = {
     //标签结束
 
     //树开始
-    homeworkTree: function(){ 
+    treeStore: function(){ 
+        return Ext.create('Ext.data.TreeStore',{ 
+            root: {
+                expanded: true,
+                children: [
+                  { text: "公告", leaf: true, href: '/students/show_notice' },
+                  { text: "查看作业", leaf: true, href: '/students' },
+                  { text: "查看成绩", leaf: true, href: '/students/show' },
+                  { text: "答疑", leaf: true, href: '#' }
+                ]
+            }
+        })
+    },
+
+    tree: function(){ 
         return Ext.create('Ext.tree.Panel',{ 
             title: '功能选择',
             width: 200,
             frame: true,
             region: 'west',
-            collapsible: true
+            collapsible: true,
+            rootVisible: false,
+            store: this.treeStore()
         })
     }
     //树结束

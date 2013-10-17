@@ -19,7 +19,7 @@ class StudentsController < ApplicationController
     render :json => { :get_subject => Subject.all.provide('id', 'name')}
   end
 
-  def post_attachment
+  def upload_attachment
     tmp = params[:file]
     if tmp
       filename = tmp.original_filename
@@ -42,6 +42,11 @@ class StudentsController < ApplicationController
     Attachment.create!(:filename=> getname )
     Homework.create!(:teacher_id => Thomework.find_by_teacher_id(a).id, :subject_id => Thomework.find_by_subject_id(a).id, :thomework_id => a, :attachment_id => Attachment.find_by_filename(getname).id )
     render :json => {}
+  end
+
+  def download_attachment
+    send_file "#{RAILS_ROOT}/public/data/" + params[:id] unless params[:id].blank?
+    render :json => true
   end
 
 end
