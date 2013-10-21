@@ -17,6 +17,7 @@ Hms.students.thomework = {
     },
 
     //表格开始
+    thomeworkGrid: function(){
         Ext.define('User', {
             extend: 'Ext.data.Model',
             fields: [
