@@ -17,7 +17,40 @@ Hms.students.thomework = {
     },
 
     //表格开始
-    thomeworkGrid: function(){ 
+        Ext.define('User', {
+            extend: 'Ext.data.Model',
+            fields: [
+                {name: 'id', type: 'integer'},
+                {name: 'name', type: 'string'},
+                {name: 'description', type: 'string'},
+                {name: 'teacher/name', type: 'string'},
+                {name: 'subject/name', type: 'string'},
+                {name: 'time_end', type: 'datatimie'}
+            ]
+        });
+
+        var store = Ext.create('Ext.data.Store', {
+            model: 'User',
+            pageSize: 6,
+            autoLoad: false,
+            proxy: {
+                type: 'ajax',
+                url: '/students/get_thomework.json',
+                reader: {
+                    type: 'json',
+                    root: 'get_thomework',
+                    totalProperty: 'totalData'
+                }
+            },
+        });
+        
+        store.load({ 
+            params: { 
+                start: 0,
+                limit: 6
+            }
+        });
+
         return Ext.create('Ext.grid.Panel',{ 
             title: '布置作业',
             region: 'center',
@@ -34,47 +67,20 @@ Hms.students.thomework = {
             },
             bbar: new Ext.PagingToolbar({ 
                 pageSize: 25,
-                store: this.thomeworkStore(),
+                store: store,
                 displayInfo: true,
                 displayMsg: '显示第 {0} 条到 {1} 条记录，一共 {2} 条',
                 emptyMsg: "没有记录"
             }),
             columns: [
-                { xtype: 'rownumberer', width: 20, align: 'center', sortable: false },
-                { text: '作业名称', sortable: true, align: 'center', dataIndex: 'name' },
-                { text: '内容', sortable: true, align: 'center', dataIndex: 'description' },
-                { text: '老师', sortable: true, align: 'center', dataIndex: 'teacher/name' },
-                { text: '科目', sortable: true, align: 'center', dataIndex: 'subject/name' },
-                { text: '截止时间', sortable: true, align: 'center', dataIndex: 'time_end' }
+                { xtype: 'rownumberer', width: 10, sortable: false },
+                { text: '作业名称', sortable: true, dataIndex: 'name' },
+                { text: '内容', sortable: true, dataIndex: 'description' },
+                { text: '老师', sortable: true, dataIndex: 'teacher/name' },
+                { text: '科目', sortable: true, dataIndex: 'subject/name' },
+                { text: '截止时间', sortable: true, dataIndex: 'time_end' }
             ],
-            store: this.thomeworkStore()
-        });
-    },
-
-    thomeworkStore: function(){ 
-        Ext.define('User', {
-            extend: 'Ext.data.Model',
-            fields: [
-                {name: 'id', type: 'integer'},
-                {name: 'name', type: 'string'},
-                {name: 'description', type: 'string'},
-                {name: 'teacher/name', type: 'string'},
-                {name: 'subject/name', type: 'string'},
-                {name: 'time_end', type: 'datatimie'}
-            ]
-        });
-
-        return Ext.create('Ext.data.Store', {
-            model: 'User',
-            proxy: {
-                type: 'ajax',
-                url: '/students/get_thomework.json',
-                reader: {
-                    type: 'json',
-                    root: 'get_thomework',
-                }
-            },
-            autoLoad: true
+            store: store
         });
     },
     //表格结束 

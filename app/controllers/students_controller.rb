@@ -7,7 +7,9 @@ class StudentsController < ApplicationController
   end
 
   def get_thomework
-    render :json => { :get_thomework => Thomework.all.provide('id', 'name', 'description', 'teacher/name', 'subject/name', 'time_end') }
+    render :json => { :get_thomework => Thomework.offset(params[:start]).limit(params[:limit]).order("id").provide('id', 'name', 'description', 'teacher/name', 'subject/name', 'time_end'),
+        :totalData => Thomework.count
+    }
   end
 
   def get_homework
