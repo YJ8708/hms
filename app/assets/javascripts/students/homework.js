@@ -42,7 +42,6 @@ Hms.students.homework = {
         return Ext.create('Ext.grid.Panel',{ 
             title: '所有已完成作业',
             forceFit: true,
-            //tbar: [{ xtype: 'button', text: '下载文件', handler: function(){} }],
             bbar: new Ext.PagingToolbar({ 
                 pageSize: 25,
                 store: this.gridStore(tabId),

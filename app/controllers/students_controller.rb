@@ -47,7 +47,7 @@ class StudentsController < ApplicationController
   end
 
   def download_attachment
-    send_file "#{RAILS_ROOT}/public/data/" + params[:id] unless params[:id].blank?
+    send_file "public/data/" + params[:id] unless params[:id].blank?
     render :json => true
   end
 
